@@ -1,37 +1,55 @@
-import React from 'react';
+import React from "react";
+import axios from "axios";
+import Movie from "./Movie";
 
+class App extends React.Component {
+  state = {
+    isLoading: true,
+    movies: [],
+  };
+  getMovies = async () => {
+    const {
+      data: {
+        data: { movies },
+      },
+    } = await axios.get("https://yts.mx/api/v2/list_movies.json");
+    this.setState({ movies, isLoading: false });
+  };
+  componentDidMount() {
+    this.getMovies();
+  }
 
-function Food({ name, url}) {
-  return (
-    <div>
-      <h3>Hello {name}</h3>
-      <h3>Go to <a href={url}>{name}</a> </h3>
-    </div>
-  );
-}
+  render() {
+    const { isLoading, movies } = this.state;
+    return (
+      <div>
+        {isLoading
+          ? "Loading"
+          : movies.map((movie) => (
+              // return null;
+              <Movie
+                key={movie.id}
+                id={movie.id}
+                year={movie.year}
+                title={movie.title}
+                summary={movie.summary}
+                poster={movie.poster}
+              />
 
-const foodILike = [
-  {
-    id: 1,
-    name: "kimchi",
-    url: "www.kimchi.com"
-  },
-  {
-    id: 2,
-    name: "ramen",
-    url: "www.ramen.com"
-  }  
-];
-
-
-function App() {
-  return (
-    <div className="App">
-      {foodILike.map(dish => (
-          <Food key={dish.id} name={dish.name} url={dish.url}/>
-      ))}
-    </div>
-  );
+              // return (
+              //   <Movie
+              //     key={movie.id}
+              //     id={movie.id}
+              //     year={movie.year}
+              //     title={movie.title}
+              //     summary={movie.summary}
+              //     poster={movie.poster}
+              //   />
+              // );
+            ))}
+      </div>
+    );
+  }
 }
 
 export default App;
